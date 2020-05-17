@@ -1,10 +1,10 @@
 import * as mysql from "mysql";
 import * as config from "config";
 import { createFilter, createQuery } from "../lib/index";
-import { Edm, odata, ODataController, ODataServer, ODataQuery, ODataErrorHandler, ResourceNotFoundError, createODataServer } from "odata-v4-server";
+import { Edm, odata, ODataController, ODataServer, ODataQuery, ODataErrorHandler, ResourceNotFoundError, createODataServer } from "@tjc-group/odata-v2-server";
 
-let db:mysql.IConnectionConfig = <mysql.IConnectionConfig>config.get<mysql.IConnectionConfig>("sqlConfig");
-let connection:mysql.IConnection = mysql.createConnection(db);
+let db: mysql.ConnectionConfig = <mysql.ConnectionConfig>config.get<mysql.ConnectionConfig>("sqlConfig");
+let connection:mysql.Connection = mysql.createConnection(db);
 
 @Edm.OpenType
 class Country{

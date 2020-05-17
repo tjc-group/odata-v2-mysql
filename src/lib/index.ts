@@ -1,7 +1,7 @@
 import { MySQLVisitor as Visitor } from "./visitor";
 import { SQLLang } from "odata-v4-sql";
-import { filter, query } from "odata-v4-parser";
-import { Token } from "odata-v4-parser/lib/lexer";
+import { filter, query } from "@tjc-group/odata-v2-parser";
+import { Token } from "@tjc-group/odata-v2-parser/lib/lexer";
 
 export interface SqlOptions{
     useParameters?:boolean

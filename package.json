@@ -1,7 +1,7 @@
 {
-  "name": "odata-v4-mysql",
-  "version": "0.1.1",
-  "description": "OData to MySQL query compiler",
+  "name": "@tjc-group/odata-v2-mysql",
+  "version": "0.1.2",
+  "description": "OData to MySQL query compiler (downgrade from odata-v4-mysql)",
   "main": "build/lib/index.js",
   "typings": "build/lib/index",
   "directories": {
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jaystack/odata-v4-mysql.git"
+    "url": "git+https://github.com/tjc-group/odata-v2-mysql.git"
   },
   "keywords": [
     "OData",
@@ -28,21 +28,21 @@
   "author": "JayStack",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jaystack/odata-v4-mysql/issues"
+    "url": "https://github.com/tjc-group/odata-v2-mysql/issues"
   },
-  "homepage": "https://github.com/jaystack/odata-v4-mysql#readme",
+  "homepage": "https://github.com/tjc-group/odata-v2-mysql#readme",
   "dependencies": {
-    "odata-v4-parser": "0.1.13",
-    "odata-v4-sql": "^0.1.1"
+    "@tjc-group/odata-v2-parser": "0.0.4",
+    "odata-v4-sql": "^0.1.2"
   },
   "devDependencies": {
-    "@types/config": "^0.0.30",
-    "@types/mysql": "^0.0.30",
+    "@types/config": "^0.0.36",
+    "@types/mysql": "^2.15.11",
     "chai": "^3.5.0",
     "config": "^1.21.0",
     "mocha": "^3.1.2",
-    "mysql": "^2.12.0",
-    "odata-v4-server": "rc",
-    "typescript": "^2.0.6"
+    "mysql": "^2.18.1",
+    "@tjc-group/odata-v2-server": "^0.0.17",
+    "typescript": "^3.9.2"
   }
 }
