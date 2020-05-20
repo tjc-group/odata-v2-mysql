@@ -18,7 +18,11 @@ export interface SqlOptions{
  */
 export function createQuery(odataQuery:string, options?:SqlOptions):Visitor;
 export function createQuery(odataQuery:Token, options?:SqlOptions):Visitor;
-export function createQuery(odataQuery:string | Token, options = <SqlOptions>{}):Visitor{
+export function createQuery(odataQuery: Visitor, options?: SqlOptions): Visitor;
+export function createQuery(odataQuery: string | Token | Visitor, options = <SqlOptions>{}):Visitor{
+    if (odataQuery instanceof Visitor) {
+        return odataQuery;
+    }
     options.type = SQLLang.MySql;
     let ast:Token = <Token>(typeof odataQuery == "string" ? query(<string>odataQuery) : odataQuery);
     return new Visitor(options).Visit(ast).asType();
