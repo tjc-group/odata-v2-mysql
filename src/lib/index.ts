@@ -3,9 +3,10 @@ import { SQLLang } from "odata-v4-sql";
 import { filter, query } from "@tjc-group/odata-v2-parser";
 import { Token } from "@tjc-group/odata-v2-parser/lib/lexer";
 
-export interface SqlOptions{
-    useParameters?:boolean
-    type?:SQLLang
+export interface SqlOptions {
+    useParameters?: boolean
+    type?: SQLLang,
+    alias?: string
 }
 
 /**
@@ -16,15 +17,15 @@ export interface SqlOptions{
  * const filter = createQuery("$filter=Size eq 4 and Age gt 18");
  * let sqlQuery = `SELECT * FROM table WHERE ${filter.where}`;
  */
-export function createQuery(odataQuery:string, options?:SqlOptions):Visitor;
-export function createQuery(odataQuery:Token, options?:SqlOptions):Visitor;
+export function createQuery(odataQuery: string, options?: SqlOptions): Visitor;
+export function createQuery(odataQuery: Token, options?: SqlOptions): Visitor;
 export function createQuery(odataQuery: Visitor, options?: SqlOptions): Visitor;
-export function createQuery(odataQuery: string | Token | Visitor, options = <SqlOptions>{}):Visitor{
+export function createQuery(odataQuery: string | Token | Visitor, options = <SqlOptions>{}): Visitor {
     if (odataQuery instanceof Visitor) {
         return odataQuery;
     }
     options.type = SQLLang.MySql;
-    let ast:Token = <Token>(typeof odataQuery == "string" ? query(<string>odataQuery) : odataQuery);
+    let ast: Token = <Token>(typeof odataQuery == "string" ? query(<string>odataQuery) : odataQuery);
     return new Visitor(options).Visit(ast).asType();
 }
 
@@ -36,10 +37,10 @@ export function createQuery(odataQuery: string | Token | Visitor, options = <Sql
  * const filter = createFilter("Size eq 4 and Age gt 18");
  * let sqlQuery = `SELECT * FROM table WHERE ${filter}`;
  */
-export function createFilter(odataFilter:string, options?:SqlOptions):Visitor;
-export function createFilter(odataFilter:Token, options?:SqlOptions):Visitor;
-export function createFilter(odataFilter:string | Token, options = <SqlOptions>{}):Visitor{
+export function createFilter(odataFilter: string, options?: SqlOptions): Visitor;
+export function createFilter(odataFilter: Token, options?: SqlOptions): Visitor;
+export function createFilter(odataFilter: string | Token, options = <SqlOptions>{}): Visitor {
     options.type = SQLLang.MySql;
-    let ast:Token = <Token>(typeof odataFilter == "string" ? filter(<string>odataFilter) : odataFilter);
+    let ast: Token = <Token>(typeof odataFilter == "string" ? filter(<string>odataFilter) : odataFilter);
     return new Visitor(options).Visit(ast).asType();
 }

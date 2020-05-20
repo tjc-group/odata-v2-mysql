@@ -24,9 +24,9 @@ class SQLLiteral extends ODataSQLLiteral {
 	}
 	'Edm.Binary'(value: string): any {
 		if (binaryMask.test(value)) {
-			return "\'" + value.match(binaryMask)[2] + "\'";
+			return "UNHEX(\'" + value.match(binaryMask)[2] + "\')";
 		} else {
-			return "\'" + Buffer.from(value, "base64").toString("hex") + "\'";
+			return "UNHEX(\'" + Buffer.from(value, "base64").toString("hex") + "\')";
 		}
 	}
 }

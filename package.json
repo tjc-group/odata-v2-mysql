@@ -1,6 +1,6 @@
 {
   "name": "@tjc-group/odata-v2-mysql",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "OData to MySQL query compiler (downgrade from odata-v4-mysql)",
   "main": "build/lib/index.js",
   "typings": "build/lib/index",
