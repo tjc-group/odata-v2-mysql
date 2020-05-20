@@ -3,7 +3,7 @@ import { Literal as ODataLiteral } from "odata-v4-literal";
 import { SQLLiteral as ODataSQLLiteral, SQLLang, Visitor } from "odata-v4-sql/lib/visitor";
 import { SqlOptions } from "./index";
 
-const binaryMask = /^(binary|X)\'([0-9a-fA-F]+)\'/;
+const binaryMask = /^(binary|X)\'([0-9a-fA-F]*)\'/;
 
 class Literal extends ODataLiteral {
 	static convert(type: string, value: string): any {
