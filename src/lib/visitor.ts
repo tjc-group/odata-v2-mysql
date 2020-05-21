@@ -1,22 +1,23 @@
 import { Token } from "@tjc-group/odata-v2-parser/lib/lexer";
-import { Literal as ODataLiteral } from "odata-v4-literal";
+// import { Literal as ODataLiteral } from "odata-v4-literal";
+import { Literal } from "odata-v4-literal";
 import { SQLLiteral as ODataSQLLiteral, SQLLang, Visitor } from "odata-v4-sql/lib/visitor";
 import { SqlOptions } from "./index";
 
 const binaryMask = /^(binary|X)\'([0-9a-fA-F]*)\'/;
 
-class Literal extends ODataLiteral {
-	static convert(type: string, value: string): any {
-		return (new Literal(type, value)).valueOf();
-	}
-	'Edm.Binary'(value: string): any {
-		if (binaryMask.test(value)) {
-			return Buffer.from(value.match(binaryMask)[2], "hex");
-		} else {
-			return Buffer.from(value, "base64");
-		}
-	}
-}
+// class Literal extends ODataLiteral {
+// 	static convert(type: string, value: string): any {
+// 		return (new Literal(type, value)).valueOf();
+// 	}
+// 	'Edm.Binary'(value: string): any {
+// 		if (binaryMask.test(value)) {
+// 			return Buffer.from(value.match(binaryMask)[2], "hex");
+// 		} else {
+// 			return Buffer.from(value, "base64");
+// 		}
+// 	}
+// }
 
 class SQLLiteral extends ODataSQLLiteral {
 	static convert(type: string, value: string): any {
