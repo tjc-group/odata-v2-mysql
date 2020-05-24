@@ -32,105 +32,126 @@ class SQLLiteral extends ODataSQLLiteral {
 	}
 }
 
-export class MySQLVisitor extends Visitor{
-	parameters:any[] = [];
-	includes:MySQLVisitor[] = [];
+export class MySQLVisitor extends Visitor {
+	parameters: any[] = [];
+	includes: MySQLVisitor[] = [];
 
-	constructor(options = <SqlOptions>{}){
+	constructor(options = <SqlOptions>{}) {
 		super(options);
 		(<any>this).parameters = [];
 		this.type = SQLLang.MySql;
 	}
 
-	from(table:string){
-		let sql = `SELECT ${this.select} FROM \`${table}\` WHERE ${this.where} ORDER BY ${this.orderby}`;
+	from(table: string) {
+		let alias = (<any>this.options).alias;
+		let sql = alias ?
+			`SELECT ${this.select} FROM \`${table}\` AS \`${alias}\` WHERE ${this.where} ORDER BY ${this.orderby}` :
+			`SELECT ${this.select} FROM \`${table}\` WHERE ${this.where} ORDER BY ${this.orderby}`;
 		if (typeof this.limit == "number") sql += ` LIMIT ${this.limit}`;
 		if (typeof this.skip == "number") sql += ` OFFSET ${this.skip}`;
 		return sql;
 	}
 
 	protected VisitExpand(node: Token, context: any) {
-        node.value.items.forEach((item) => {
-            let expandPath = item.value.path.raw;
-            let visitor = this.includes.filter(v => v.navigationProperty == expandPath)[0];
-            if (!visitor){
-                visitor = new MySQLVisitor(this.options);
+		node.value.items.forEach((item) => {
+			let expandPath = item.value.path.raw;
+			let visitor = this.includes.filter(v => v.navigationProperty == expandPath)[0];
+			if (!visitor) {
+				visitor = new MySQLVisitor(this.options);
 				visitor.parameterSeed = this.parameterSeed;
-                this.includes.push(visitor);
-            }
-            visitor.Visit(item);
+				this.includes.push(visitor);
+			}
+			visitor.Visit(item);
 			this.parameterSeed = visitor.parameterSeed;
-        });
-    }
-
-	protected VisitSelectItem(node:Token, context:any){
-		let item = node.raw.replace(/\//g, '.');
-		this.select += `\`${item}\``;
+		});
 	}
 
-	protected VisitODataIdentifier(node:Token, context:any){
-		this[context.target] += `\`${node.value.name}\``;
+	protected VisitSelectItem(node: Token, context: any) {
+		let item = node.raw.replace(/\//g, '.');
+		let alias = (<any>this.options).alias;
+		this.select += alias ? `\`${alias}\`.\`${item}\`` : `\`${item}\``;
+	}
+
+	protected VisitODataIdentifier(node: Token, context: any) {
+		let alias = (<any>this.options).alias;
+		this[context.target] += alias ? `\`${alias}\`.\`${node.value.name}\`` : `\`${node.value.name}\``;
 		context.identifier = node.value.name;
 	}
 
-	protected VisitEqualsExpression(node:Token, context:any){
+	protected VisitEqualsExpression(node: Token, context: any) {
 		this.Visit(node.value.left, context);
 		this.where += " = ";
 		this.Visit(node.value.right, context);
-		if (this.options.useParameters && context.literal == null){
-			this.where = this.where.replace(/= \?$/, "IS NULL").replace(new RegExp(`\\? = \\\`${context.identifier}\\\`$`), `\`${context.identifier}\` IS NULL`);
-		}else if (context.literal == "NULL"){
-			this.where = this.where.replace(/= NULL$/, "IS NULL").replace(new RegExp(`NULL = \\\`${context.identifier}\\\`$`), `\`${context.identifier}\` IS NULL`);
+		let alias = (<any>this.options).alias;
+
+		let identifierMask = alias ?
+			new RegExp(`\\? = \\\`${alias}\\\`\.\\\`${context.identifier}\\\`$`) :
+			new RegExp(`\\? = \\\`${context.identifier}\\\`$`);
+
+		let replaceStr = alias ? `\`${alias}\`.\`${context.identifier}\`  IS NULL` : `\`${context.identifier}\` IS NULL`
+
+		if (this.options.useParameters && context.literal == null) {
+			this.where = this.where.replace(/= \?$/, "IS NULL").replace(identifierMask, replaceStr);
+		} else if (context.literal == "NULL") {
+			this.where = this.where.replace(/= NULL$/, "IS NULL").replace(identifierMask, replaceStr);
 		}
 	}
 
-	protected VisitNotEqualsExpression(node:Token, context:any){
+	protected VisitNotEqualsExpression(node: Token, context: any) {
 		this.Visit(node.value.left, context);
 		this.where += " <> ";
 		this.Visit(node.value.right, context);
-		if (this.options.useParameters && context.literal == null){
-			this.where = this.where.replace(/<> \?$/, "IS NOT NULL").replace(new RegExp(`\\? <> \\\`${context.identifier}\\\`$`), `\`${context.identifier}\` IS NOT NULL`);
-		}else if (context.literal == "NULL"){
-			this.where = this.where.replace(/<> NULL$/, "IS NOT NULL").replace(new RegExp(`NULL <> \\\`${context.identifier}\\\`$`), `\`${context.identifier}\` IS NOT NULL`);
+
+		let alias = (<any>this.options).alias;
+		let identifierMask = alias ?
+			new RegExp(`\\? = \\\`${alias}\\\`\.\\\`${context.identifier}\\\`$`) :
+			new RegExp(`\\? = \\\`${context.identifier}\\\`$`);
+
+		let replaceStr = alias ? `\`${alias}\`.\`${context.identifier}\`  IS NULL` : `\`${context.identifier}\` IS NOT NULL`
+
+		if (this.options.useParameters && context.literal == null) {
+			this.where = this.where.replace(/<> \?$/, "IS NOT NULL").replace(identifierMask, replaceStr);
+		} else if (context.literal == "NULL") {
+			this.where = this.where.replace(/<> NULL$/, "IS NOT NULL").replace(identifierMask, replaceStr);
 		}
 	}
 
-	protected VisitLiteral(node:Token, context:any){
-		if (this.options.useParameters){
+	protected VisitLiteral(node: Token, context: any) {
+		if (this.options.useParameters) {
 			let value = Literal.convert(node.value, node.raw);
 			context.literal = value;
 			this.parameters.push(value);
 			this.where += "?";
-		}else this.where += (context.literal = SQLLiteral.convert(node.value, node.raw));
+		} else this.where += (context.literal = SQLLiteral.convert(node.value, node.raw));
 	}
 
-	protected VisitMethodCallExpression(node:Token, context:any){
+	protected VisitMethodCallExpression(node: Token, context: any) {
 		var method = node.value.method;
 		var params = node.value.parameters || [];
-		switch (method){
+		switch (method) {
 			case "contains":
 				this.Visit(params[0], context);
-				if (this.options.useParameters){
+				if (this.options.useParameters) {
 					let value = Literal.convert(params[1].value, params[1].raw);
 					this.parameters.push(`%${value}%`);
 					this.where += " like ?";
-				}else this.where += ` like '%${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}%'`;
+				} else this.where += ` like '%${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}%'`;
 				break;
 			case "endswith":
 				this.Visit(params[0], context);
-				if (this.options.useParameters){
+				if (this.options.useParameters) {
 					let value = Literal.convert(params[1].value, params[1].raw);
 					this.parameters.push(`%${value}`);
 					this.where += " like ?";
-				}else this.where += ` like '%${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}'`;
+				} else this.where += ` like '%${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}'`;
 				break;
 			case "startswith":
 				this.Visit(params[0], context);
-				if (this.options.useParameters){
+				if (this.options.useParameters) {
 					let value = Literal.convert(params[1].value, params[1].raw);
 					this.parameters.push(`${value}%`);
 					this.where += " like ?";
-				}else this.where += ` like '${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}%'`;
+				} else this.where += ` like '${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}%'`;
 				break;
 			case "substring":
 				this.where += "SUBSTR(";
@@ -138,10 +159,10 @@ export class MySQLVisitor extends Visitor{
 				this.where += ", ";
 				this.Visit(params[1], context);
 				this.where += " + 1";
-				if (params[2]){
+				if (params[2]) {
 					this.where += ", ";
 					this.Visit(params[2], context);
-				}else{
+				} else {
 					this.where += ", CHAR_LENGTH(";
 					this.Visit(params[0], context);
 					this.where += ")";
@@ -150,13 +171,13 @@ export class MySQLVisitor extends Visitor{
 				break;
 			case "substringof":
 				this.Visit(params[1], context);
-				if (params[0].value == "Edm.String"){
-					if (this.options.useParameters){
+				if (params[0].value == "Edm.String") {
+					if (this.options.useParameters) {
 						let value = Literal.convert(params[0].value, params[0].raw);
 						this.parameters.push(`%${value}%`);
 						this.where += ` like \$${this.parameters.length}`;
-					}else this.where += ` like '%${SQLLiteral.convert(params[0].value, params[0].raw).slice(1, -1)}%'`;
-				}else{
+					} else this.where += ` like '%${SQLLiteral.convert(params[0].value, params[0].raw).slice(1, -1)}%'`;
+				} else {
 					this.where += " like ";
 					this.Visit(params[0], context);
 				}
