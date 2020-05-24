@@ -45,7 +45,7 @@ export class MySQLVisitor extends Visitor {
 	from(table: string) {
 		let alias = (<any>this.options).alias;
 		let sql = alias ?
-			`SELECT ${this.select} FROM \`${table}\` AS \`${alias}\` WHERE ${this.where} ORDER BY ${this.orderby}` :
+			`SELECT ${this.select} FROM \`${table}\` AS ${alias} WHERE ${this.where} ORDER BY ${this.orderby}` :
 			`SELECT ${this.select} FROM \`${table}\` WHERE ${this.where} ORDER BY ${this.orderby}`;
 		if (typeof this.limit == "number") sql += ` LIMIT ${this.limit}`;
 		if (typeof this.skip == "number") sql += ` OFFSET ${this.skip}`;
@@ -69,12 +69,12 @@ export class MySQLVisitor extends Visitor {
 	protected VisitSelectItem(node: Token, context: any) {
 		let item = node.raw.replace(/\//g, '.');
 		let alias = (<any>this.options).alias;
-		this.select += alias ? `\`${alias}\`.\`${item}\`` : `\`${item}\``;
+		this.select += alias ? `${alias}.\`${item}\`` : `\`${item}\``;
 	}
 
 	protected VisitODataIdentifier(node: Token, context: any) {
 		let alias = (<any>this.options).alias;
-		this[context.target] += alias ? `\`${alias}\`.\`${node.value.name}\`` : `\`${node.value.name}\``;
+		this[context.target] += alias ? `${alias}.\`${node.value.name}\`` : `\`${node.value.name}\``;
 		context.identifier = node.value.name;
 	}
 
@@ -85,10 +85,10 @@ export class MySQLVisitor extends Visitor {
 		let alias = (<any>this.options).alias;
 
 		let identifierMask = alias ?
-			new RegExp(`\\? = \\\`${alias}\\\`\.\\\`${context.identifier}\\\`$`) :
+			new RegExp(`\\? = ${alias}\.\\\`${context.identifier}\\\`$`) :
 			new RegExp(`\\? = \\\`${context.identifier}\\\`$`);
 
-		let replaceStr = alias ? `\`${alias}\`.\`${context.identifier}\`  IS NULL` : `\`${context.identifier}\` IS NULL`
+		let replaceStr = alias ? `${alias}.\`${context.identifier}\`  IS NULL` : `\`${context.identifier}\` IS NULL`
 
 		if (this.options.useParameters && context.literal == null) {
 			this.where = this.where.replace(/= \?$/, "IS NULL").replace(identifierMask, replaceStr);
@@ -104,10 +104,10 @@ export class MySQLVisitor extends Visitor {
 
 		let alias = (<any>this.options).alias;
 		let identifierMask = alias ?
-			new RegExp(`\\? = \\\`${alias}\\\`\.\\\`${context.identifier}\\\`$`) :
+			new RegExp(`\\? = ${alias}\.\\\`${context.identifier}\\\`$`) :
 			new RegExp(`\\? = \\\`${context.identifier}\\\`$`);
 
-		let replaceStr = alias ? `\`${alias}\`.\`${context.identifier}\`  IS NULL` : `\`${context.identifier}\` IS NOT NULL`
+		let replaceStr = alias ? `${alias}.\`${context.identifier}\`  IS NULL` : `\`${context.identifier}\` IS NOT NULL`
 
 		if (this.options.useParameters && context.literal == null) {
 			this.where = this.where.replace(/<> \?$/, "IS NOT NULL").replace(identifierMask, replaceStr);
