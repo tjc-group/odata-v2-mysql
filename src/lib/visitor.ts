@@ -175,7 +175,8 @@ export class MySQLVisitor extends Visitor {
 					if (this.options.useParameters) {
 						let value = Literal.convert(params[0].value, params[0].raw);
 						this.parameters.push(`%${value}%`);
-						this.where += ` like \$${this.parameters.length}`;
+						this.where += " like ?";
+						// this.where += ` like \$${this.parameters.length}`;
 					} else this.where += ` like '%${SQLLiteral.convert(params[0].value, params[0].raw).slice(1, -1)}%'`;
 				} else {
 					this.where += " like ";
