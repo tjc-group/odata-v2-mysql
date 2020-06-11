@@ -1,6 +1,6 @@
 {
   "name": "@tjc-group/odata-v2-mysql",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "OData to MySQL query compiler (downgrade from odata-v4-mysql)",
   "main": "build/lib/index.js",
   "typings": "build/lib/index",
@@ -38,15 +38,15 @@
   "devDependencies": {
     "@tjc-group/odata-v2-server": "^0.0.40",
     "@types/config": "^0.0.36",
-    "@types/mysql": "^2.15.12",
-    "ts-node": "8.10.1",
+    "@types/mysql": "^2.15.13",
     "chai": "^4.2.0",
     "config": "^3.3.1",
     "mocha": "^7.2.0",
     "mochawesome": "^6.1.1",
+    "mysql": "^2.18.1",
     "remap-istanbul": "^0.11.1",
     "rimraf": "^2.7.1",
-    "mysql": "^2.18.1",
-    "typescript": "^3.9.3"
+    "ts-node": "8.10.1",
+    "typescript": "^3.9.5"
   }
 }
