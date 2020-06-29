@@ -1,6 +1,6 @@
 {
   "name": "@tjc-group/odata-v2-mysql",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "OData to MySQL query compiler (downgrade from odata-v4-mysql)",
   "main": "build/lib/index.js",
   "typings": "build/lib/index",
@@ -32,13 +32,13 @@
   },
   "homepage": "https://github.com/tjc-group/odata-v2-mysql#readme",
   "dependencies": {
-    "@tjc-group/odata-v2-parser": "0.0.17",
+    "@tjc-group/odata-v2-parser": "0.0.18",
     "odata-v4-sql": "^0.1.2"
   },
   "devDependencies": {
-    "@tjc-group/odata-v2-server": "^0.0.40",
+    "@tjc-group/odata-v2-server": "^0.0.64",
     "@types/config": "^0.0.36",
-    "@types/mysql": "^2.15.13",
+    "@types/mysql": "^2.15.14",
     "chai": "^4.2.0",
     "config": "^3.3.1",
     "mocha": "^7.2.0",
