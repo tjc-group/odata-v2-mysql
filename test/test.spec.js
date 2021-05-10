@@ -1,11 +1,11 @@
-var expect = require("chai").expect;
+const expect = require("chai").expect;
 
 var parser = new require("@tjc-group/odata-v2-parser");
 
 var mysql = require("../build/lib/index");
 
 describe("SQL Visitor", () => {
-    var ast = parser.query("$filter=(SystemID eq 'D60' and startswith(Description, 'Sys')) or UUID eq null&$select=SystemID,Description");
+    var ast = parser.query("$format=json&$filter=(SystemID eq 'D60' and startswith(Description, 'Sys')) or UUID eq null&$select=SystemID,Description");
 
     it("should produce where condition as '\`SystemID\` = ? AND \`Description\` like ?'", function () {
         var query = mysql.createQuery(ast);

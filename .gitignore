@@ -35,3 +35,5 @@ node_modules
 .vscode
 config/development.json
 build
+**/.DS_Store
+.npmrc

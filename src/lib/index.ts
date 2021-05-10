@@ -25,7 +25,7 @@ export function createQuery(odataQuery: string | Token | Visitor, options = <Sql
         return odataQuery;
     }
     options.type = SQLLang.MySql;
-    let ast: Token = <Token>(typeof odataQuery == "string" ? query(<string>odataQuery) : odataQuery);
+    const ast: Token = <Token>(typeof odataQuery == "string" ? query(<string>odataQuery) : odataQuery);
     return new Visitor(options).Visit(ast).asType();
 }
 
@@ -41,6 +41,6 @@ export function createFilter(odataFilter: string, options?: SqlOptions): Visitor
 export function createFilter(odataFilter: Token, options?: SqlOptions): Visitor;
 export function createFilter(odataFilter: string | Token, options = <SqlOptions>{}): Visitor {
     options.type = SQLLang.MySql;
-    let ast: Token = <Token>(typeof odataFilter == "string" ? filter(<string>odataFilter) : odataFilter);
+    const ast: Token = <Token>(typeof odataFilter == "string" ? filter(<string>odataFilter) : odataFilter);
     return new Visitor(options).Visit(ast).asType();
 }

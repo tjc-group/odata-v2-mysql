@@ -35,6 +35,7 @@ class SQLLiteral extends ODataSQLLiteral {
 export class MySQLVisitor extends Visitor {
 	parameters: any[] = [];
 	includes: MySQLVisitor[] = [];
+	format: string;
 
 	constructor(options = <SqlOptions>{}) {
 		super(options);
@@ -50,6 +51,10 @@ export class MySQLVisitor extends Visitor {
 		if (typeof this.limit == "number") sql += ` LIMIT ${this.limit}`;
 		if (typeof this.skip == "number") sql += ` OFFSET ${this.skip}`;
 		return sql;
+	}
+
+	protected VisitFormat(node: Token, context: any) {
+		this.format = node.value.format;
 	}
 
 	protected VisitExpand(node: Token, context: any) {
